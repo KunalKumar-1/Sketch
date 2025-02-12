@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String       @id   @default(uuid()) //i could have used an integer but i prefer using a string
+  email     String       @unique
+  password  String
+  name      String
+  photo     String  
+  rooms     Room[] // User can have multiple rooms
+  chats     Chat[]  // User can have multiple chats
+}
+
+model Room {
+ id         Int         @id  @default(autoincrement())
+ slug      String      @unique //it should be unique
+ createdAt DateTime    @default(now())
+ adminId   String
+ admin     User       @relation(fields: [adminId], references: [id])
+ chats    Chat[]  //every room can have multiple chats
+}
+
+model Chat {
+  id        Int       @id  @default(autoincrement())
+  roomId    Int    
+  message  String     
+  userId   String
+  room     Room       @relation(fields: [roomId], references: [id]) //every chat belongs to only one room
+  user     User       @relation(fields: [userId], references: [id]) //every chat is associated to a user
+}

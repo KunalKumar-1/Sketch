@@ -11,5 +11,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "prisma": "^6.3.1"
+  }
 }
