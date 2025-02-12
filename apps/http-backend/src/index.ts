@@ -41,10 +41,11 @@ const app = express();
 })
 
 
-app.post('signin', async (req, res) =>{
+app.post('/signin', async (req, res) =>{
     //to check if the data user sending is correct or not
     const parseData = SigninSchema.safeParse(req.body);
     if(!parseData.success){
+        console.log(parseData.error);
        res.json({
            message: "Incorrect inputs"
        })
@@ -78,7 +79,7 @@ app.post('signin', async (req, res) =>{
 })
 
 
-app.post('rooms', middleware, async(req, res) => {
+app.post('/room', middleware, async(req, res) => {
     
 
     const parseData = CreateRoomSchema.safeParse(req.body);
