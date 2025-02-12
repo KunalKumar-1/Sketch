@@ -53,7 +53,6 @@ app.post('/signin', async (req, res) =>{
     }
 
     //TODO: compare the password with the hashed password in the db
-    
     const user = await prismaClient.user.findFirst({
         where: {
             email: parseData.data.username,
@@ -80,8 +79,6 @@ app.post('/signin', async (req, res) =>{
 
 
 app.post('/room', middleware, async(req, res) => {
-    
-
     const parseData = CreateRoomSchema.safeParse(req.body);
 
     if(!parseData.success){
@@ -93,16 +90,23 @@ app.post('/room', middleware, async(req, res) => {
 // db call here to check if the data user sending is correct or not
  //@ts-ignore
     const userId = req.userId;
-    await prismaClient.room.create({
-        data: {
-            slug: parseData.data.name,
-            adminId: userId
-        }
-    })
 
-    res.json({
-        roomId: 123
-    })
+    try {
+        const room = await prismaClient.room.create({
+            data: {
+                slug: parseData.data.name,
+                adminId: userId
+            }
+        })
+
+        res.json({
+            roomId: room.id
+        })
+} catch(e){
+     res.status(411).json({
+        message: "This room already exists, please try another name"
+     })
+}
 })
 
 app.listen(3001);
