@@ -9,7 +9,7 @@ const app = express();
  app.use(express.json());
 
 
-app.post('/signup', async (req, res) => {
+ app.post('/signup', async (req, res) => {
  // db call
  // to check if the data user sending is correct or not 
 
@@ -67,7 +67,7 @@ app.post('signin', async (req, res) =>{
         return;
     }
    
-    //generate a token && send it back to the user
+   //generate a token && send it back to the user
    const token =  jwt.sign({
        userId: user?.id
     }, JWT_SECRET);
@@ -78,21 +78,30 @@ app.post('signin', async (req, res) =>{
 })
 
 
+app.post('rooms', middleware, async(req, res) => {
+    
 
-app.post('rooms', middleware, (req, res) => {
-    // db call here to check if the data user sending is correct or not
-    const data = CreateRoomSchema.safeParse(req.body);
-    if(!data.success){
+    const parseData = CreateRoomSchema.safeParse(req.body);
+
+    if(!parseData.success){
        res.json({
            message: "Incorrect inputs"
        })
        return; 
     }
+// db call here to check if the data user sending is correct or not
+ //@ts-ignore
+    const userId = req.userId;
+    await prismaClient.room.create({
+        data: {
+            slug: parseData.data.name,
+            adminId: userId
+        }
+    })
 
     res.json({
         roomId: 123
     })
 })
-
 
 app.listen(3001);
