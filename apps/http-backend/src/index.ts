@@ -41,19 +41,35 @@ app.post('/signup', async (req, res) => {
 })
 
 
-app.post('signin', (req, res) =>{
+app.post('signin', async (req, res) =>{
     //to check if the data user sending is correct or not
-    const data = SigninSchema.safeParse(req.body);
-    if(!data.success){
+    const parseData = SigninSchema.safeParse(req.body);
+    if(!parseData.success){
        res.json({
            message: "Incorrect inputs"
        })
        return; 
     }
 
-    const userId = 1;
+    //TODO: compare the password with the hashed password in the db
+    
+    const user = await prismaClient.user.findFirst({
+        where: {
+            email: parseData.data.username,
+            password: parseData.data.password
+        }
+    })
+    
+    if(!user) {
+        res.status(401).json({
+            message: "Invalid credebntials"
+        })
+        return;
+    }
+   
+    //generate a token && send it back to the user
    const token =  jwt.sign({
-        userId
+       userId: user?.id
     }, JWT_SECRET);
 
     res.json({
