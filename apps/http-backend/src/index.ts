@@ -116,10 +116,10 @@ app.get("/chats/:roomId", async (req, res) => {
         where: {
             roomId: roomId,
         },
-        orderBy: {
+        orderBy: { //shorts id by decending order
             id: "desc"
         },
-        take: 50
+        take: 50  // limit offset to 50
     });
 
     res.json({
@@ -130,4 +130,21 @@ app.get("/chats/:roomId", async (req, res) => {
 }
 })
 
+app.get("/room/:slug", async (req, res) => {
+    const slug = req.params.slug;
+    try{
+    const room =  await prismaClient.room.findMany({
+        where: {
+            slug,
+        }
+    });
+    res.json({
+        room
+    })
+} catch(e) {
+   console.log(e);
+}
+})
+
 app.listen(3001);
+// TODO: rate limiting
